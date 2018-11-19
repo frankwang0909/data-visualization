@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>D3.js基础篇-理解update,enter,exit</title>
+  </head>
+  <body>
+    <p>1</p>
+    <p>2</p>
+    <p>3</p>
+    <script src="./js/d3.v3.min.js"></script>
+    <script>
+      // var width = 400;
+      // var height = 400;
+
+      // //在 body 里添加一个 SVG 画布
+      // var svg = d3
+      //   .select("body")
+      //   .append("svg")
+      //   .attr("width", width)
+      //   .attr("height", height);
+
+      // svg
+      //   .selectAll("rect") //选择svg内所有的矩形
+      //   .data(dataset) //绑定数组
+      //   .enter() //指定选择集的enter部分
+      //   .append("rect"); //添加足够数量的矩形元素
+
+      // --------- enter ---------
+      var dataset = [3, 6, 9, 12, 15];
+
+      //选择body中的p元素
+      var p = d3.select("body").selectAll("p");
+
+      //获取update部分
+      // var update = p.data(dataset);
+
+      // //获取enter部分
+      // var enter = update.enter();
+
+      // //update部分的处理：更新属性值
+      // update.text(function(d) {
+      //   return "update " + d;
+      // });
+
+      // //enter部分的处理：添加元素后赋予属性值
+      // enter.append("p").text(function(d) {
+      //   return "enter " + d;
+      // });
+
+      // ------exit --------
+
+      var dataset = [3];
+
+      //选择 body 中的 p 元素
+      var p = d3.select("body").selectAll("p");
+
+      //获取 update 部分
+      var update = p.data(dataset);
+
+      //获取 exit 部分
+      var exit = update.exit();
+
+      //update 部分的处理：更新属性值
+      update.text(function(d) {
+        return "update " + d;
+      });
+
+      //exit 部分的处理：修改 p 元素的属性
+      exit.text(function(d) {
+        return "exit";
+      });
+
+      //exit 部分的处理通常是删除元素
+      // exit.remove();
+    </script>
+  </body>
+</html>

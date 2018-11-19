@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Bar chart with SVG</title>
+  <style>
+    .chart rect {
+      fill: steelblue;
+    }
+
+    .chart text {
+      fill: white;
+      font: 10px sans-serif;
+      text-anchor: end;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 
+  <svg class="chart" width="420" height="120">
+    <g transform="translate(0,0)">
+      <rect width="40" height="19"></rect>
+      <text x="37" y="9.5" dy=".35em">4</text>
+    </g>
+    <g transform="translate(0,20)">
+      <rect width="80" height="19"></rect>
+      <text x="77" y="9.5" dy=".35em">8</text>
+    </g>
+    <g transform="translate(0,40)">
+      <rect width="150" height="19"></rect>
+      <text x="147" y="9.5" dy=".35em">15</text>
+    </g>
+    <g transform="translate(0,60)">
+      <rect width="160" height="19"></rect>
+      <text x="157" y="9.5" dy=".35em">16</text>
+    </g>
+    <g transform="translate(0,80)">
+      <rect width="230" height="19"></rect>
+      <text x="227" y="9.5" dy=".35em">23</text>
+    </g>
+    <g transform="translate(0,100)">
+      <rect width="420" height="19"></rect>
+      <text x="417" y="9.5" dy=".35em">42</text>
+    </g>
+  </svg> -->
+  <svg class="chart"></svg>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script>
+
+    // var data = [4, 8, 15, 16, 23, 42];
+
+    // var width = 420,
+    //   barHeight = 20;
+
+    // var x = d3.scale.linear()
+    //   .domain([0, d3.max(data)])
+    //   .range([0, width]);
+
+    // var chart = d3.select(".chart")
+    //   .attr("width", width)
+    //   .attr("height", barHeight * data.length);
+
+    // var bar = chart.selectAll("g")
+    //   .data(data)
+    //   .enter().append("g")
+    //   .attr("transform", function (d, i) { return "translate(0," + i * barHeight + ")"; });
+
+    // bar.append("rect")
+    //   .attr("width", x)
+    //   .attr("height", barHeight - 1);
+
+    // bar.append("text")
+    //   .attr("x", function (d) { return x(d) - 3; })
+    //   .attr("y", barHeight / 2)
+    //   .attr("dy", ".35em")
+    //   .text(function (d) { return d; });
+
+
+
+    var width = 420,
+      barHeight = 20;
+
+    // x 轴缩放比例函数
+    var x = d3.scale.linear()
+      .range([0, width]);
+
+    // 设置 svg 的高度和宽度
+    var chart = d3.select(".chart")
+      .attr("width", width);
+
+    // 强制类型转换函数
+    function type(d) {
+      d.value = +d.value; // coerce to number
+      return d;
+    }
+
+    // 异步读取 tsv 格式文件
+    d3.tsv("data.tsv", type, function (error, data) {
+      // 第二个参数 type() 函数，会对每条数据做强制类型转换，把字符串类型转成数值类型
+      console.table(data);
+      // var data = [
+      //   { name: "Locke", value: 4 },
+      //   { name: "Reyes", value: 8 },
+      //   { name: "Ford", value: 15 },
+      //   { name: "Jarrah", value: 16 },
+      //   { name: "Shephard", value: 23 },
+      //   { name: "Kwon", value: 42 }
+      // ];
+
+      // 缩放比例函数 
+      x.domain([0, d3.max(data, function (d) { return d.value; })]);
+
+      // 设置图表高度
+      chart.attr("height", barHeight * data.length);
+
+      // 设置柱状图在svg中的位置布局
+      var bar = chart.selectAll("g")
+        .data(data)
+        .enter().append("g")
+        .attr("transform", function (d, i) { return "translate(0," + i * barHeight + ")"; });
+
+      // 设置柱状图在宽度、高度
+      bar.append("rect")
+        .attr("width", function (d) { return x(d.value); })
+        .attr("height", barHeight - 1);
+
+      // 设置说明文字的内容、坐标位置
+      bar.append("text")
+        .attr("x", function (d) { return x(d.value) - 3; })
+        .attr("y", barHeight / 2)
+        .attr("dy", ".35em")
+        .text(function (d) { return d.value; });
+    });
+
+
+  </script>
+</body>

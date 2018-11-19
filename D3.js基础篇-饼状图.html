@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>饼状图 Pie</title>
+  </head>
+  <body>
+    <script src="./js/d3.v3.min.js"></script>
+    <script>
+      //画布大小
+      var width = 400;
+      var height = 400;
+
+      //在 body 里添加一个 SVG 画布
+      var svg = d3
+        .select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+      var dataset = [30, 10, 43, 55, 13];
+
+      // 定义一个布局
+      var pie = d3.layout.pie();
+
+      // 转换后的数据
+      var piedata = pie(dataset);
+      /* [
+        { data: 30, value: 30, startAngle: 4.077828874858275, endAngle: 5.3261438365495835, padAngle: 0 },
+        { data: 10, value: 10, startAngle: 5.86708031994915, endAngle: 6.283185307179586, padAngle: 0 },
+        { data: 43, value: 43, startAngle: 2.288577429767399, endAngle: 4.077828874858275, padAngle: 0 },
+        { data: 55, value: 55, startAngle: 0, endAngle: 2.288577429767399, padAngle: 0 },
+        { data: 13, value: 13, startAngle: 5.3261438365495835, endAngle: 5.86708031994915, padAngle: 0 }
+      ] */
+
+      var outerRadius = 150; //外半径
+      var innerRadius = 0; //内半径，为 0 则中间没有空白
+
+      var arc = d3.svg
+        .arc() //弧生成器
+        .innerRadius(innerRadius) //设置内半径
+        .outerRadius(outerRadius); //设置外半径
+
+      var color = d3.scale.category10(); //有十种颜色的颜色比例尺
+
+      var arcs = svg
+        .selectAll("g")
+        .data(piedata)
+        .enter()
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + width / 2 + ")");
+
+      arcs
+        .append("path")
+        .attr("fill", function(d, i) {
+          return color(i);
+        })
+        .attr("d", function(d) {
+          return arc(d); //调用弧生成器，得到路径值
+        });
+
+      arcs
+        .append("text")
+        .attr("transform", function(d) {
+          return "translate(" + arc.centroid(d) + ")";
+        })
+        .attr("text-anchor", "middle")
+        .text(function(d) {
+          return d.data;
+        });
+    </script>
+  </body>
+</html>

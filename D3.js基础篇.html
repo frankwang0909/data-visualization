@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>D3.js 基础篇</title>
+    <style>
+      .steelblue {
+        fill: steelblue;
+      }
+
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+      }
+
+      .axis text {
+        font-family: sans-serif;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <p>JavaScript</p>
+    <p id="myid" class="myclass">HTML</p>
+    <p class="myclass">CSS</p>
+    <!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
+    <script src="./js/d3.v3.min.js"></script>
+    <script>
+      var body = d3.select("body");
+      // // 选择第一个 p 元素
+      // var p1 = body.select("p");
+      // p1.style("color", "red");
+
+      // // 选择所有 p 元素
+      // var p = body.selectAll("p");
+      // p.style("background-color", "gray");
+
+      // // 选择第二个 p 元素
+      // var p2 = body.select("#myid");
+      // p2.style("color", "blue");
+
+      // //  选择后两个 p 元素
+      // var pp = body.selectAll(".myclass");
+      // pp.style("color", "green");
+
+      // 增加元素
+      body.append("p").text("append a p elemen");
+
+      body.insert("p", "#myid").text("insert a p element");
+
+      var width = 300; //画布的宽度
+      var height = 300; //画布的高度
+
+      var svg = d3
+        .select("body") //选择文档中的 body 元素
+        .append("svg") //添加一个 svg 元素
+        .attr("width", width) //设定宽度
+        .attr("height", height); //设定高度
+
+      // var dataset = [250, 210, 170, 130, 90];
+
+      // var rectHeight = 25; //每个矩形所占的像素高度(包括空白)
+
+      // svg
+      //   .selectAll("rect")
+      //   .data(dataset)
+      //   .enter()
+      //   .append("rect")
+      //   .attr("x", 20)
+      //   .attr("y", function(d, i) {
+      //     return i * rectHeight;
+      //   })
+      //   .attr("width", function(d) {
+      //     return d;
+      //   })
+      //   .attr("height", rectHeight - 2)
+      // // .attr("class", "steelblue")
+      //   .attr("fill", "steelblue");
+
+      var dataset = [2.5, 2.1, 1.7, 1.3, 0.9];
+
+      // 定义比例尺
+      var linear = d3.scale
+        .linear()
+        .domain([0, d3.max(dataset)])
+        .range([0, 250]);
+
+      // 定义坐标轴
+      var axis = d3.svg
+        .axis()
+        .scale(linear) //指定比例尺
+        .orient("bottom") //指定刻度的方向
+        .ticks(7); //指定刻度的数量
+
+      var rectHeight = 25; //每个矩形所占的像素高度(包括空白)
+
+      svg
+        .selectAll("rect")
+        .data(dataset)
+        .enter()
+        .append("rect")
+        .attr("x", 20)
+        .attr("y", function(d, i) {
+          return i * rectHeight;
+        })
+        .attr("width", function(d) {
+          return linear(d); //在这里用比例尺
+        })
+        .attr("height", rectHeight - 2)
+        .attr("fill", "steelblue");
+
+      svg
+        .append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(20,130)")
+        .call(axis);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Bar chart</title>
+  <style>
+    .chart div {
+      font: 10px sans-serif;
+      background-color: steelblue;
+      text-align: right;
+      padding: 3px;
+      margin: 1px;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <section></section>
+  <div class="chart">
+    <!-- <div style="width: 40px;">4</div>
+    <div style="width: 80px;">8</div>
+    <div style="width: 150px;">15</div>
+    <div style="width: 160px;">16</div>
+    <div style="width: 230px;">23</div>
+    <div style="width: 420px;">42</div> -->
+  </div>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
+  <script>
+
+    var data = [4, 8, 15, 16, 23, 42];
+    // var div = document.createElement("div");
+    // div.innerHTML = "Hello, world!";
+    // document.body.appendChild(div);
+
+    // var body = d3.select("body");
+    // var div = body.append("div");
+    // div.html("Hello, world!");
+
+
+
+    // d3.select("body")
+    //   .style("color", "black")
+    //   .style("background-color", "pink");
+
+    // var section = d3.selectAll("section");
+
+    // section.append("div")
+    //   .html("First!");
+
+    // section.append("div")
+    //   .html("Second.");
+
+
+    // d3.select(".chart")
+    //   .selectAll("div")
+    //   .data(data)
+    //   .enter().append("div")
+    //   .style("width", function (d) { return d * 5 + "px"; })
+    //   .text(function (d) { return d; });
+
+    // 缩放比例
+    var x = d3.scale.linear()
+      .domain([0, d3.max(data)])
+      .range([0, 840]);
+
+    d3.select(".chart")
+      .selectAll("div")
+      .data(data)
+      .enter().append("div")
+      .style("width", function (d) { return x(d) + "px"; })
+      .text(function (d) { return d; });
+
+  </script>
+</body>
+
+</html>
