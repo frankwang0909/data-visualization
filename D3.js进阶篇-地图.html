@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>地图：需要启动一个静态服务器</title>
+  </head>
+
+  <body>
+    <script src="./js/d3.v3.min.js"></script>
+    <script>
+      //画布大小
+      var width = 1000;
+      var height = 800;
+
+      //在 body 里添加一个 SVG 画布
+      var svg = d3
+        .select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+      // 定义一个颜色比例尺
+      var color = d3.scale.category20();
+
+      // 定义一个投影函数
+      var projection = d3.geo
+        .mercator()
+        .center([107, 35]) // 设置地图的中心位置，[107,31] 指的是经度和纬度
+        // .center([112, 23])
+        // .center([170, -40])
+        .scale(800) // 设置放大的比例
+        // .scale(4000)
+        // .scale(2000)
+        .translate([width / 2, height / 2]); // 设置平移
+
+      // 定义一个地理路径生成器
+      var path = d3.geo.path().projection(projection);
+
+      //  向服务器请求地理数据
+      d3.json("./json/china.json", function(error, root) {
+        // d3.json("./json/guangdong.json", function(error, root) {
+        // d3.json("./json/china.geojson", function(error, root) {
+        // d3.json("./json/Japan.json", function(error, root) {
+        // d3.json("./json/SouthKorea.json", function(error, root) {
+        // d3.json("./json/NewZealand.json", function(error, root) {
+        if (error) return console.error(error);
+        console.log(root.features);
+
+        svg
+          .selectAll("path")
+          .data(root.features)
+          .enter()
+          .append("path")
+          .attr("stroke", "#000")
+          .attr("stroke-width", 1)
+          .attr("fill", function(d, i) {
+            return color(i);
+          })
+          .attr("d", path) //使用地理路径生成器
+          .on("mouseover", function(d, i) {
+            d3.select(this).attr("fill", "yellow");
+          })
+          .on("mouseout", function(d, i) {
+            d3.select(this).attr("fill", color(i));
+          });
+      });
+    </script>
+  </body>
+</html>
