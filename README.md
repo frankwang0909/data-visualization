@@ -4,7 +4,7 @@
 
 ### D3.js 基础篇
 
-1. [DOM 操作与数据绑定](./D3.js基础篇-DOM操作与数据绑定.md)
+1. [DOM 操作与数据绑定](./D3.js基础篇-DOM%20操作与数据绑定.md)
 
 2. [理解 update,enter,exit](./D3.js基础篇-理解update,enter,exit.md)
 
