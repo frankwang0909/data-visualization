@@ -26,17 +26,17 @@
 
 4. [弦图 Chord](./D3.js进阶篇-弦图.md)
 
-5. [直方图 Histogram](./D3.js进阶篇-直方图.md) 待更新
+5. [直方图 Histogram](./D3.js进阶篇-直方图.md)
 
-6. [堆栈图 Stack](./D3.js进阶篇-堆栈图.md) 待更新
+6. [堆栈图 Stack](./D3.js进阶篇-堆栈图.md)
 
-7. [捆图 Bundle](./D3.js进阶篇-捆图.md) 待更新
+7. [捆图 Bundle](./D3.js进阶篇-捆图.md)
 
 8. [集群图 Cluster](./D3.js进阶篇-集群图.md)
 
 9. [树状图 Tree](./D3.js进阶篇-树状图.md)
 
-10. [打包图 Pack](./D3.js进阶篇-打包图.md) 待更新
+10. [打包图 Pack](./D3.js进阶篇-打包图.md)
 
 11. [分区图 Partition](./D3.js进阶篇-分区图.md) 待更新
 

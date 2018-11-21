@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>D3.js 进阶篇： 捆图 Bundle</title>
+    <style>
+      .link {
+        fill: none;
+        stroke: black;
+        stroke-opacity: 0.5;
+        stroke-width: 8px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="./js/d3.v3.min.js"></script>
+    <script>
+      //画布大小
+      var width = 700;
+      var height = 600;
+
+      var svg = d3
+        .select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+      // 先定义一个外边框对象
+      var margin = { left: 50, right: 50, top: 30, bottom: 30 };
+
+      var railway = [
+        { source: "北京", target: "天津" }, // 京沪高铁 京津段
+        { source: "天津", target: "济南" }, // 津济段
+        { source: "济南", target: "南京" }, // 济宁段
+        { source: "南京", target: "上海" }, // 沪宁段
+        { source: "北京", target: "石家庄" }, // 京港高铁 京石段
+        { source: "石家庄", target: "武汉" }, //  石武段
+        { source: "武汉", target: "广州" }, // 武广段
+        { source: "广州", target: "深圳" }, // 广深段
+        { source: "深圳", target: "香港" }, // 深港段
+        { source: "北京", target: "沈阳" }, // 京哈高铁 京沈段
+        { source: "沈阳", target: "哈尔滨" }, // 沈哈段
+        { source: "沈阳", target: "大连" }, // 哈大高铁 沈大段
+        { source: "杭州", target: "福州" }, // 杭福沈高铁 杭福段
+        { source: "福州", target: "厦门" }, // 福厦段
+        { source: "厦门", target: "深圳" }, // 厦深段
+        { source: "徐州", target: "郑州" }, // 徐兰高铁 郑徐段
+        { source: "郑州", target: "西安" }, // 郑西段
+        { source: "西安", target: "兰州" }, // 西兰段
+        { source: "上海", target: "杭州" }, // 沪昆高铁 沪杭段
+        { source: "杭州", target: "昆明" }, // 杭昆段
+        { source: "青岛", target: "济南" }, // 清太高铁 胶济段
+        { source: "济南", target: "石家庄" }, // 石济段
+        { source: "石家庄", target: "太原" }, // 石太段
+        { source: "上海", target: "南京" }, // 沪汉蓉沿江高铁 沪宁段
+        { source: "南京", target: "合肥" }, // 合宁段
+        { source: "合肥", target: "武汉" }, // 合武段
+        { source: "武汉", target: "重庆" }, // 汉渝段
+        { source: "重庆", target: "成都" } // 成渝段
+      ];
+
+      var arr = [];
+      for (var i = 0; i < railway.length; i++) {
+        var item = railway[i];
+        if (arr.indexOf(item.source) == -1) {
+          arr.push(item.source);
+        }
+        if (arr.indexOf(item.target) == -1) {
+          arr.push(item.target);
+        }
+      }
+
+      var cities = {
+        name: "",
+        children: []
+      };
+
+      cities.children = arr.map(function(item) {
+        return {
+          name: item
+        };
+      });
+      console.log(cities);
+
+      // 集群图布局
+      var cluster = d3.layout
+        .cluster()
+        .size([360, width / 2 - margin.left - margin.right])
+        .separation(function(a, b) {
+          return (a.parent == b.parent ? 1 : 2) / a.depth;
+        });
+
+      // 捆图布局
+      var bundle = d3.layout.bundle();
+
+      // 使用集群图布局计算节点
+      var nodes = cluster.nodes(cities);
+      console.log(nodes);
+
+      // 定义一个函数，按城市名将 railway 中的 source 和 target 替换成节点对象
+
+      function mapNodes(nodes, links) {
+        var hash = [];
+        for (var i = 0; i < nodes.length; i++) {
+          hash[nodes[i].name] = nodes[i];
+        }
+        var resultLinks = [];
+        for (var j = 0; j < links.length; j++) {
+          resultLinks.push({
+            source: hash[links[j].source],
+            target: hash[links[j].target]
+          });
+        }
+        return resultLinks;
+      }
+
+      var oLinks = mapNodes(nodes, railway);
+      console.log(oLinks);
+
+      var links = bundle(oLinks);
+      console.log(links);
+
+      // 放射式的线段生成器
+      var line = d3.svg.line
+        .radial()
+        .interpolate("bundle")
+        .tension(0.85)
+        .radius(function(d) {
+          return d.y;
+        })
+        .angle(function(d) {
+          return (d.x / 180) * Math.PI;
+        });
+
+      // 添加一个分组元素`<g>`，用来放所有与捆图相关的元素
+      var gBundle = svg
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+      var color = d3.scale.category20c(); //颜色比例尺
+
+      // 在 gBundle 中添加连线路径
+      var link = gBundle
+        .selectAll(".link")
+        .data(links)
+        .enter()
+        .append("path")
+        .attr("class", "link")
+        .attr("d", line); //使用线段生成器
+
+      // 向图中添加节点
+      var node = gBundle
+        .selectAll(".node")
+        .data(
+          nodes.filter(function(d) {
+            return !d.children; // 只绑定没有子节点的节点
+          })
+        )
+        .enter()
+        .append("g")
+        .attr("class", "node")
+        .attr("transform", function(d) {
+          return (
+            "rotate(" +
+            (d.x - 90) +
+            ")translate(" +
+            d.y +
+            ")" +
+            "rotate(" +
+            (90 - d.x) +
+            ")"
+          );
+        });
+
+      node
+        .append("circle")
+        .attr("r", 20)
+        .style("fill", function(d, i) {
+          return color(i);
+        });
+
+      node
+        .append("text")
+        .attr("dy", ".2em")
+        .style("text-anchor", "middle")
+        .text(function(d) {
+          return d.name;
+        });
+    </script>
+  </body>
+</html>
