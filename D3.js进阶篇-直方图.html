@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>D3.js 进阶篇： 直方图 histogram</title>
+    <style>
+      .node circle {
+        fill: #fff;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+      }
+
+      .node {
+        font: 12px sans-serif;
+      }
+
+      .link {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 1.5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="./js/d3.v3.min.js"></script>
+    <script>
+      //画布大小
+      var width = 600;
+      var height = 600;
+
+      var svg = d3
+        .select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(40,0)");
+
+      // 生成一个随机数组
+      var rand = d3.random.normal(0, 25);
+      var dataset = [];
+      for (var i = 0; i < 100; i++) {
+        dataset.push(+rand().toFixed(2)); // 保留两位小数
+      }
+      console.log(dataset);
+
+      //  指定间隔数
+      var bin_num = 15;
+
+      // 定义一个直方图的布局
+      var histogram = d3.layout
+        .histogram()
+        .range([-50, 50])
+        .bins(bin_num)
+        .frequency(true);
+
+      // 应用布局，对数据进行转换
+      var data = histogram(dataset);
+      console.log(data);
+
+      // 定义比例尺
+      var max_height = 400;
+      var rect_step = 30;
+      var heights = [];
+      for (var i = 0; i < data.length; i++) {
+        heights.push(data[i].y);
+      }
+      var yScale = d3.scale
+        .linear()
+        .domain([d3.min(heights), d3.max(heights)])
+        .range([0, max_height]);
+
+      //绘制图形
+      var graphics = svg.append("g").attr("transform", "translate(30,20)");
+
+      //绘制矩形
+      graphics
+        .selectAll("rect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("x", function(d, i) {
+          return i * rect_step;
+        })
+        .attr("y", function(d, i) {
+          return max_height - yScale(d.y);
+        })
+        .attr("width", function(d, i) {
+          return rect_step - 2;
+        })
+        .attr("height", function(d) {
+          return yScale(d.y);
+        })
+        .attr("fill", "steelblue");
+
+      //绘制坐标轴的直线
+      graphics
+        .append("line")
+        .attr("stroke", "black")
+        .attr("stroke-width", "1px")
+        .attr("x1", 0)
+        .attr("y1", max_height)
+        .attr("x2", data.length * rect_step)
+        .attr("y2", max_height);
+
+      //绘制坐标轴的分隔符直线
+      graphics
+        .selectAll(".linetick")
+        .data(data)
+        .enter()
+        .append("line")
+        .attr("stroke", "black")
+        .attr("stroke-width", "1px")
+        .attr("x1", function(d, i) {
+          return i * rect_step + rect_step / 2;
+        })
+        .attr("y1", max_height)
+        .attr("x2", function(d, i) {
+          return i * rect_step + rect_step / 2;
+        })
+        .attr("y2", max_height + 5);
+
+      //绘制文字
+      graphics
+        .selectAll("text")
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("font-size", "10px")
+        .attr("x", function(d, i) {
+          return i * rect_step;
+        })
+        .attr("y", function(d, i) {
+          return max_height;
+        })
+        .attr("dx", rect_step / 2 - 8)
+        .attr("dy", "15px")
+        .text(function(d) {
+          return Math.floor(d.x);
+        });
+    </script>
+  </body>
+</html>
