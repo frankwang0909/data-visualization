@@ -38,8 +38,8 @@
 
 10. [打包图 Pack](./D3.js进阶篇-打包图.md)
 
-11. [分区图 Partition](./D3.js进阶篇-分区图.md) 待更新
+11. [分区图 Partition](./D3.js进阶篇-分区图.md)
 
-12. [矩阵树图 Treemap](./D3.js进阶篇-矩阵树图.md) 待更新
+12. [矩阵树图 Treemap](./D3.js进阶篇-矩阵树图.md)
 
 13. [地图 Geo](./D3.js进阶篇-地图.md)
